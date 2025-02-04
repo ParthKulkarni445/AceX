@@ -30,7 +30,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-/lib/server/.env
+.env
 /lib/server/node_modules
 
 # Symbolication related
