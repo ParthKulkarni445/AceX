@@ -5,11 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Load the .env file from the correct path
-  await dotenv.load(fileName: "lib/server/.env");
+  try{await dotenv.load(fileName: ".env");}
+  catch(e){print(e);}
 
   runApp(
     MultiProvider(

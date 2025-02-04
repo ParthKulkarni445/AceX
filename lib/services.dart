@@ -44,6 +44,7 @@ class AuthService{
         email: email,
         token: '',
       );
+      print('${Constants.uri}/api/signup');
       http.Response res = await http.post(
         Uri.parse('${Constants.uri}/api/signup'),
         body: user.toJson(),
