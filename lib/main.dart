@@ -3,13 +3,9 @@ import 'package:cf_buddy/landing_page.dart';
 import 'package:cf_buddy/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  try{await dotenv.load(fileName: ".env");}
-  catch(e){print(e);}
 
   runApp(
     MultiProvider(

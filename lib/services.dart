@@ -112,8 +112,8 @@ class AuthService{
 
 class ApiService {
   final String baseUrl = 'https://codeforces.com/api/'; // Replace with your server's URL if deployed
-  final String apiKey = dotenv.env['API_KEY']!; // Get your API key from Codeforces
-  final String apiSecret = dotenv.env['API_SECRET']!; // Get your API secret from Codeforces
+  final String apiKey = '9e88d7124929b723e58f3acb3c88d7da8ced9eff';
+  final String apiSecret = 'd7bb1a299784290d8733bde388354d292eacc09b';
 
   Future<ProblemDetails> getProblemDetails(int contestId, String index) async {
     final url = 'https://codeforces.com/problemset/problem/$contestId/$index';
