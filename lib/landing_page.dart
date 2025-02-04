@@ -17,7 +17,6 @@ class LandingPage extends StatefulWidget {
 
 class _LandingPageState extends State<LandingPage> {
   int _page = 0;
-  final String handle='IamAddictedtoCP';
 
   final List<Color?> colors = [
     Colors.red,
@@ -38,6 +37,8 @@ class _LandingPageState extends State<LandingPage> {
   @override
   void initState() {
     super.initState();
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    final handle = user.handle;
     pages = [
       ProfilePage(handle: handle),
       const ContestsPage(),
@@ -49,7 +50,6 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
     double w = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
