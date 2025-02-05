@@ -1,7 +1,9 @@
 import 'package:cf_buddy/friends_landpage.dart';
+import 'package:cf_buddy/providers/user_provider.dart';
 import 'package:cf_buddy/services.dart';
 import 'package:cf_buddy/utils/loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -12,7 +14,7 @@ class FriendsPage extends StatefulWidget {
 
 class _FriendsPageState extends State<FriendsPage> {
   final FocusNode _searchFocusNode = FocusNode();
-  final String _handle = 'IamAddictedtoCP';
+  late String _handle;
   late Future<List<dynamic>> friends;
   late Future<List<dynamic>> onlineFriends;
 
@@ -32,6 +34,8 @@ class _FriendsPageState extends State<FriendsPage> {
   @override
   void initState() {
     super.initState();
+    final user = Provider.of<UserProvider>(context, listen: false).user;
+    _handle = user.handle;
     _fetchData();
   }
 

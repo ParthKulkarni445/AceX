@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'package:cf_buddy/auth_page.dart';
 import 'package:cf_buddy/landing_page.dart';
 import 'package:cf_buddy/models/user.dart';
 import 'package:cf_buddy/providers/user_provider.dart';
@@ -106,6 +107,53 @@ class AuthService{
     } catch (e) {
       showAlert(context, e.toString());
     }
+  }
+
+  void getUserData(
+    BuildContext context,
+  ) async {
+    try {
+      var userProvider = Provider.of<UserProvider>(context, listen: false);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('x-auth-token');
+
+      if (token == null) {
+        prefs.setString('x-auth-token', '');
+      }
+
+      var tokenRes = await http.post(
+        Uri.parse('${Constants.uri}/tokenIsValid'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'x-auth-token': token!,
+        },
+      );
+
+      var response = jsonDecode(tokenRes.body);
+
+      if (response == true) {
+        http.Response userRes = await http.get(
+          Uri.parse('${Constants.uri}/'),
+          headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8', 'x-auth-token': token},
+        );
+
+        userProvider.setUser(userRes.body);
+      }
+    } catch (e) {
+      showAlert(context, e.toString());
+    }
+  }
+
+  void signOut(BuildContext context) async {
+    final navigator = Navigator.of(context);
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('x-auth-token', '');
+    navigator.pushAndRemoveUntil(
+      MaterialPageRoute(
+        builder: (context) => const AuthPage(),
+      ),
+      (route) => false,
+    );
   }
 }
 
@@ -351,7 +399,7 @@ Future<List<dynamic>> getFriendsList(String handle) async {
   final url = Uri.parse(
     '$baseUrl$methodName?$paramString&apiSig=$apiSig'
   );
-
+  print(url);
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
