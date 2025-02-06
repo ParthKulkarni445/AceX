@@ -1,4 +1,5 @@
 import 'package:cf_buddy/services.dart';
+import 'package:cf_buddy/settings.dart';
 import 'package:cf_buddy/utils/loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -121,9 +122,51 @@ Color getColorForRating(int rating) {
         centerTitle: true,
         elevation: 15,
         shadowColor: Colors.black,
-        title: const Text('Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Profile',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.red,
         surfaceTintColor: Colors.red,
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'settings') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
+                );
+              } else if (value == 'signout') {
+                final authService = AuthService();
+                authService.signOut(context);
+              }
+            },
+            icon: const Icon(Icons.more_vert, color: Colors.white, size: 30),
+            color: Colors.white, // Dropdown background color
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    const Icon(Icons.settings, color: Colors.black),
+                    const SizedBox(width: 8),
+                    const Text('Settings', style: TextStyle(color: Colors.black)),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'signout',
+                child: Row(
+                  children: [
+                    const Icon(Icons.logout, color: Colors.black),
+                    const SizedBox(width: 8),
+                    const Text('Sign Out', style: TextStyle(color: Colors.black)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       body: FutureBuilder<List<dynamic>>(
       future: Future.wait([userInfo, ratingHistory, submissions]),

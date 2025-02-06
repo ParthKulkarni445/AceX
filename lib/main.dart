@@ -3,10 +3,12 @@ import 'package:cf_buddy/landing_page.dart';
 import 'package:cf_buddy/providers/user_provider.dart';
 import 'package:cf_buddy/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   runApp(
     MultiProvider(
       providers: [
@@ -30,7 +32,12 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    authService.getUserData(context);
+    initialise();
+  }
+
+  void initialise() async{
+    await authService.getUserData(context);
+    FlutterNativeSplash.remove();
   }
 
   @override

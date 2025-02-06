@@ -7,13 +7,14 @@ void showAlert(BuildContext context, String text) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        content: Text(text),
+        backgroundColor: Colors.white,
+        content: Text(text, style: TextStyle(color: Colors.black)),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
             },
-            child: Text('OK'),
+            child: Text('OK', style: TextStyle(color: Colors.black)),
           ),
         ],
       );

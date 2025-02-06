@@ -7,11 +7,11 @@ import 'package:cf_buddy/providers/user_provider.dart';
 import 'package:cf_buddy/utils/constant.dart';
 import 'package:cf_buddy/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ProblemDetails {
   final String title;
@@ -109,7 +109,7 @@ class AuthService{
     }
   }
 
-  void getUserData(
+  Future<void> getUserData(
     BuildContext context,
   ) async {
     try {
@@ -159,8 +159,7 @@ class AuthService{
 
 class ApiService {
   final String baseUrl = 'https://codeforces.com/api/'; // Replace with your server's URL if deployed
-  final String apiKey = '9e88d7124929b723e58f3acb3c88d7da8ced9eff';
-  final String apiSecret = 'd7bb1a299784290d8733bde388354d292eacc09b';
+  final FlutterSecureStorage storage = FlutterSecureStorage();
 
   Future<ProblemDetails> getProblemDetails(int contestId, String index) async {
     final url = 'https://codeforces.com/problemset/problem/$contestId/$index';
@@ -308,7 +307,7 @@ class ApiService {
     }
   }
 
-  String _generateApiSig(int time, String methodName, String paramString) {
+  String _generateApiSig(int time, String methodName, String paramString, String? apiSecret) {
   // Create random string of 6 characters
   final rand = Random().nextInt(900000) + 100000; // Generates a number between 100000 and 999999
   
@@ -324,6 +323,9 @@ class ApiService {
 
 Future<Map<String,dynamic>> getFriendStandings(String handle, int contestId) async {
   //print('Start fetching standings for $handle, ${DateTime.now()}');
+    final apiKey = await storage.read(key: 'apiKey');
+    final apiSecret = await storage.read(key: 'apiSecret');
+
     const methodName = 'contest.standings';
     final time = (DateTime.now().millisecondsSinceEpoch / 1000).round();
 
@@ -336,7 +338,7 @@ Future<Map<String,dynamic>> getFriendStandings(String handle, int contestId) asy
     final paramString = 'apiKey=$apiKey&contestId=$contestId&handles=$handle;$friendsHandles&time=$time';
 
     // Generate API signature
-    final apiSig = _generateApiSig(time, methodName, paramString);
+    final apiSig = _generateApiSig(time, methodName, paramString, apiSecret);
     //print('$baseUrl$methodName?$paramString&apiSig=$apiSig');
     // Construct full URL with authentication
     final url = Uri.parse(
@@ -358,6 +360,8 @@ Future<Map<String,dynamic>> getFriendStandings(String handle, int contestId) asy
 }
 
  Future<List<dynamic>> fetchFriends(String handle, bool isOnline) async {
+    final apiKey = await storage.read(key: 'apiKey');
+    final apiSecret = await storage.read(key: 'apiSecret');
     const methodName = 'user.friends';
     final time = (DateTime.now().millisecondsSinceEpoch / 1000).round();
     
@@ -365,7 +369,7 @@ Future<Map<String,dynamic>> getFriendStandings(String handle, int contestId) asy
     final paramString = 'apiKey=$apiKey&onlyOnline=$isOnline&time=$time';
     
     // Generate API signature
-    final apiSig = _generateApiSig(time, methodName, paramString);
+    final apiSig = _generateApiSig(time, methodName, paramString, apiSecret);
     // Construct full URL with authentication
     final url = Uri.parse(
       '$baseUrl$methodName?$paramString&apiSig=$apiSig'
@@ -385,6 +389,8 @@ Future<Map<String,dynamic>> getFriendStandings(String handle, int contestId) asy
   }
 
 Future<List<dynamic>> getFriendsList(String handle) async {
+  final apiKey = await storage.read(key: 'apiKey');
+  final apiSecret = await storage.read(key: 'apiSecret');
   //print('Start fetching friends for $handle, ${DateTime.now()}');
   const methodName = 'user.friends';
   final time = (DateTime.now().millisecondsSinceEpoch / 1000).round();
@@ -393,7 +399,7 @@ Future<List<dynamic>> getFriendsList(String handle) async {
   final paramString = 'apiKey=$apiKey&time=$time';
   
   // Generate API signature
-  final apiSig = _generateApiSig(time, methodName, paramString);
+  final apiSig = _generateApiSig(time, methodName, paramString, apiSecret);
   
   // Construct full URL with authentication
   final url = Uri.parse(
